@@ -1,0 +1,13 @@
+e6780abd53e76c910cdef12ff39a7337 *DESCRIPTION
+1ba81104f4dc94fc34afb93ed7fe7248 *NAMESPACE
+3f9e5cb1804386d88e63f12a349246ee *R/gensphere.R
+5fb81f5bb56ff02cc567bb64a680bbae *demo/00Index
+f9507a008324bb903001547bb6a87541 *demo/gensphere.R
+5d0b8021f8072a6c8aef326c3c8f0d33 *man/cfunc.new.Rd
+c3f6d773eb6738d300351a12f527e7bf *man/figures/contours2d.png
+1cf8dc54e6e59b49170cc893e866bab6 *man/figures/densitysurface.png
+3ec42ad143b85c0fdd80ab2f8779cdca *man/figures/rgensphere.png
+d41141e5ef42e1e89ca1a0a7c3862c68 *man/figures/star.png
+c9bc63b4c83431fc86251acb274b90c5 *man/gensphere-package.Rd
+e3761fe02a04b85d014805531c924360 *man/gensphere.Rd
+24bf145cc9895dd85c2451143eec1c58 *man/genspheremisc.Rd
