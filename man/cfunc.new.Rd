@@ -14,7 +14,7 @@ define a contour function and then evaluate it.
 \usage{
 cfunc.new(d)
 cfunc.add.term(cfunc, type, k)
-cfunc.finish(cfunc, nsubdiv = 2, maxEvals=100000, ...)
+cfunc.finish(cfunc, nsubdiv = 2, maxEvals=100000, norm.const.method="integrate",...)
 cfunc.eval(cfunc, x)
 }
 %- maybe also 'usage' for other objects documented here.
@@ -33,10 +33,15 @@ cfunc.eval(cfunc, x)
 }
   \item{maxEvals}{maximum number of evaluations of the integrand function, see details section below
 }
+  \item{norm.const.method}{method used to compute the norming constant.  Can be "integrate" (the default, in which case the contour function is
+  numerically integrated to get the norming constant), or "simplex.area" (in which case no integration is done; the surface area of the contour is 
+  approximated by the surface area of the tesselation).  This later choice is for complex surface or higher dimensional surfaces where
+  the numerical integration may fail or take a very long time.  This allows simulation in cases where the numerical integration is not feasible.
+}
   \item{...}{optional arguments to pass to integration routine, see details section below
 }
-
 }
+
 \details{A contour function describes the directional behavior of a generalized spherical distribution.
 In this package, a contour function is built by calling three functions:
 \code{cfunc.new} to start the definition of a d-dimensional contour, \code{cfunc.add.term} to add a
@@ -90,13 +95,15 @@ class "gensphere.contour" with fields:
 \item{m}{number of terms in the contour function, i.e. the number of times \code{cfunc.add.term} was called}
 \item{term}{a vector length m of type list, with each list describing a term in the contour function}
 \item{norm.const}{norming constant}
-\item{functionEvaluations}{number of times the integrand (contour) function is evaluated by \code{adaptIntegrateSphereTri}}
+\item{functionEvaluations}{number of times the integrand (contour) function is evaluated by \code{adaptIntegrateSphereTri} when computing norm.const}
 \item{tessellation}{an object of type "mvmesh" that gives a geometrical description of the contour. It is used
  to plot the contour and to simulate from the contour}
 \item{tessellation.weights}{weights used in simulation; surface area of the simplices in the tessellation}
 \item{simplex.count}{vector of length 3 giving the number of simplices used at the end of
   three internal stages of construction: after initial subdivision, after refining the sphere based on cones and bumps, 
     and final count have adaptive integration routine partitions the sphere}
+\item{norm.const.method}{value of input argument norm.const.method}
+    
 \code{cfunc.eval} returns a vector of length n=nrow(x); y[i] = cfunc(x[,i]) = value of the contour function at point x[,i].
 
 The plots below show the three contours defined in the examples below.

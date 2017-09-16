@@ -130,7 +130,7 @@ cfunc$m <- m
 return(cfunc) }
 
 #####################################################################
-cfunc.finish <- function( cfunc, nsubdiv=2, maxEvals=100000, ... ) {
+cfunc.finish <- function( cfunc, nsubdiv=2, maxEvals=100000, norm.const.method="integrate", ... ) {
 # utility function to finish the definition of a contour function
 
 # compute tessellation of contour; start with a sphere
@@ -158,16 +158,32 @@ if( nrow(newV) > 0 ){
 
 # compute norming constant, possibly refine the tessellation, and get weights
 # by computing the surface area of the contour
-f1 <- function( x ) { cfunc.eval( cfunc,  x )^cfunc$d }
-S1 <- aperm(tess1$S,c(2,1,3))
-a <- adaptIntegrateSphereTri( f1, S1, partitionInfo=TRUE, maxEvals=maxEvals, ... )
-if (a$returnCode != 0) {
-  stop(paste("Error return from adaptIntegrateSphereTri: returnCode=",a$returnCode," ",
-    a$message))
+if( norm.const.method == "integrate" ) {
+  f1 <- function( x ) { cfunc.eval( cfunc,  x )^cfunc$d }
+  S1 <- aperm(tess1$S,c(2,1,3))
+  a <- adaptIntegrateSphereTri( f1, S1, partitionInfo=TRUE, maxEvals=maxEvals, ... )
+  if (a$returnCode != 0) {
+    stop(paste("Error return from adaptIntegrateSphereTri: returnCode= ",a$returnCode," ",
+      a$message, ".  Consider using norm.const.method='simplex.area'.", sep=""))
+  }
+  cfunc$norm.const <- 1.0/a$integral
+  cfunc$tessellation.weights <- a$subsimplicesIntegral
+  cfunc$functionEvaluations <- a$functionEvaluations
+} else {
+  if (norm.const.method=="simplex.area") {
+    # just compute area of simplices
+    n.tess1 <- dim(tess1$S)[3]
+    cfunc$tessellation.weights <- double( n.tess1 )
+    for (i in 1:n.tess1) {
+      cfunc$tessellation.weights[i] <- SimplicialCubature::SimplexSurfaceArea(tess1$S[,,i])
+    }
+    cfunc$functionEvaluations <- 0    
+    cfunc$norm.const <- 1/sum(cfunc$tessellation.weights)
+    a <- list(subsimplices=tess1$S)
+  } else {
+    stop("Unknown value of norm.const.method: ",norm.const.method )
+  }    
 }
-cfunc$norm.const <- 1.0/a$integral
-cfunc$tessellation.weights <- a$subsimplicesIntegral
-cfunc$functionEvaluations <- a$functionEvaluations
 
 # construct a new mvmesh object using the partition info
 tess2 <- mvmeshFromSimplices( aperm(a$subsimplices, c(2,1,3) ) )
@@ -304,8 +320,8 @@ return(xnorm*y)}
 #####################################################################
 gs.cone <- function( x, mu, theta0 ){
 # computes a vector y, with
-#         y[i] = height of cone with peak 1 at mu and height 0 r units
-#                away from 0, where distance from origin is meansure in radians
+#         y[i] = height of cone with peak 1 at center mu and height 0 r units
+#                away from 0, where distance r from center is measured in radians
 #                along the sphere.
 #    x is a (d x m) matrix with columns x[,i] giving a unit vector in R^d
 #    mu is the "mean" vector, a point on the unit sphere in R^d
@@ -327,7 +343,7 @@ y <- double(m)
 for (i in 1:m) {
   x.mu <- sum( x[,i]*mu )
   if( x.mu > 0 ) {
-    if (x.mu > 1) { x.mu <-1 }  # roundoff can make x.mu = 1+epsilon, 
+    if (x.mu > 1) { x.mu <- 1 }  # roundoff can make x.mu = 1+epsilon, 
                                 # which causes acos(x.mu) to be NA
     theta <- acos(x.mu)
     ht <- 1.0 - theta/theta0

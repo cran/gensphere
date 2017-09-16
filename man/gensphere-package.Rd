@@ -34,6 +34,9 @@ Please let me know if you find any mistakes.  I will try to fix bugs promptly.
 Constructive comments for improvements are welcome;  
 actually implementing any suggestions will be dependent on time constraints.
 
+Version 1.0 was released on 18 May 2016.  Version 1.1 was released on 13 September 2017 and includes a 
+new optional argument norm.const.method in the function cfunc.finish.  Also changes were made to 
+accomodate changes in package SphericalCubature.
 }
 
 \references{
