@@ -40,8 +40,8 @@ cfunc.eval(cfunc, x)
 }
   \item{...}{optional arguments to pass to integration routine, see details section below
 }
-}
 
+}
 \details{A contour function describes the directional behavior of a generalized spherical distribution.
 In this package, a contour function is built by calling three functions:
 \code{cfunc.new} to start the definition of a d-dimensional contour, \code{cfunc.add.term} to add a
@@ -55,10 +55,10 @@ shape.  The remaining elements of k depend on the value of 'type'.:
 
 \itemize{
 \item{"constant": }{k is a single number; k[1]=radius of the sphere}
-\item{"elliptical": }{k is a vector of length d^2+1; k[1]=scale, k[2:(d^2+1)] specify the symmetric positive definite matrix B with is used to compute
+\item{"elliptical": }{k is a vector of length d^2+1; k[1]=scale of ellipse, k[2:(d^2+1)] specify the symmetric positive definite matrix B with is used to compute
 the elliptical contour}
-\item{"proj.normal": }{k is a vector of length d+2; k[1]=scale, mu=k[2:(d+1)] is the vector pointing in the direction where the normal bump is centered,
-    k[d+2]=scale of the isotropic normal bump}
+\item{"proj.normal": }{k is a vector of length d+2; k[1]=scale of the bump, mu=k[2:(d+1)] is the vector pointing 
+   in the direction where the normal bump is centered,     k[d+2]=standard deviation of the isotropic normal bump}
 \item{"lp.norm": }{k is a vector of length 2; k[1]=scale and k[2]=p, the power used in the l_p norm}
 \item{"gen.lp.norm": }{k is vector of length 2+m*d for some positive integer m; k[1]=scale, k[2]=p, the power used in the l-p norm, k[3:(2+m*d)] 
   spcifies a matrix A that is used to compute || A x ||_p }
@@ -111,12 +111,12 @@ The plots below show the three contours defined in the examples below.
 \if{html}{
 \figure{contours2d.png}
 
-\figure{star.png}
+\figure{ballbump.png}
 }
 \if{latex}{
 \figure{contours2d.png}{options: width=4in}
 
-\figure{star.png}{options: width=3in}
+\figure{ballbump.png}{options: width=3in}
 }
 
 }
@@ -127,7 +127,7 @@ cfunc1 <- cfunc.add.term( cfunc1,"lp.norm",k=c(1,1))
 cfunc1 <- cfunc.finish( cfunc1 )
 cfunc1
 cfunc.eval( cfunc1, c(sqrt(2)/2, sqrt(2)/2) )
-\donttest{plot( cfunc1, col='red', lwd=3, main="diamond contour")}
+if( interactive()) { plot( cfunc1, col='red', lwd=3, main="diamond contour") }
 
 # 2-dim blob
 cfunc2 <- cfunc.new(d=2)
@@ -135,21 +135,17 @@ cfunc2 <- cfunc.add.term( cfunc2,"constant",k=1)
 cfunc2 <- cfunc.add.term( cfunc2,"proj.normal",k=c( 1, sqrt(2)/2, sqrt(2)/2, 0.1) )
 cfunc2 <- cfunc.add.term( cfunc2,"proj.normal",k=c( 1, -1,0, 0.1) )
 cfunc2 <- cfunc.finish( cfunc2, nsubdiv=4 )
-\donttest{
-plot( cfunc2, col='green', lwd=3, main="contour with two bumps")
+if(interactive()) {
+  plot( cfunc2, col='green', lwd=3, main="contour with two bumps")
 
-# 3-dim star-like contour
-cfunc3 <- cfunc.new(d=3)
-cfunc3 <- cfunc.add.term( cfunc3, "constant", k=0.5 )
-for (i in 1:3) {
-  u <- c(0,0,0);  u[i] <- 1  # i-th unit vector
-  cfunc3 <- cfunc.add.term( cfunc3, "cone", k=c(1,u,.2) )
-  cfunc3 <- cfunc.add.term( cfunc3, "cone", k=c(1,-u,.2) )
-}  
-cfunc3 <- cfunc.finish( cfunc3, maxEvals=400000 ) # this is slow, ~ 15 min
-
-plot( cfunc3, show.faces=TRUE, col='blue')
-nS <- dim(cfunc3$tessellation$S)[3]
-title3d( paste("star with",nS,"simplices"))
+  # 3-dim ball with one spike
+  cfunc3 <- cfunc.new( d=3 )
+  cfunc3 <- cfunc.add.term( cfunc3, "elliptical",k=c( 1,  1,0,0, 0,1,0, 0,0,1 ) )
+  cfunc3 <- cfunc.add.term( cfunc3, "proj.normal",k=c( 1, 1,0,0, .25 ) ) 
+  cfunc3 <- cfunc.finish( cfunc3, nsubdiv=3 ) # takes ~20 seconds, get warnings
+  plot( cfunc3, show.faces=TRUE, col='blue')
+  nS <- dim(cfunc3$tessellation$S)[3]
+  title3d( paste("ball with bump with",nS,"simplices"))
 }
 }
+

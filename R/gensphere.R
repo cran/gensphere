@@ -59,12 +59,11 @@ if (min(rstar) > 0) {
 } else {
   if (num.star > 0) {
     warning("Error in cfunc.eval: some terms have 0 in denominator; 0/0 undefined")
-    r <- rep(NA,length(r))
+    r <- rep(NaN,length(r))
   }
 }
 return(r) }
 #####################################################################
-
 gensphere <- function( cfunc, dradial, rradial, g0 ) {
 # define a new generalized spherical distribution
 #   cfunc is a contour function defined with cfunc.new, cfunc.add.term, cfunc.finish
@@ -83,7 +82,7 @@ cfunc.new <- function( d ) {
 
 d <- as.integer( d )
 stopifnot( d > 1 )
-cfunc <- list( d=d, m=0L, norm.const=NA, term=vector("list",0) )
+cfunc <- list( d=d, m=0L, norm.const=NaN, term=vector("list",0) )
 return( cfunc ) }
 
 #####################################################################
@@ -161,10 +160,10 @@ if( nrow(newV) > 0 ){
 if( norm.const.method == "integrate" ) {
   f1 <- function( x ) { cfunc.eval( cfunc,  x )^cfunc$d }
   S1 <- aperm(tess1$S,c(2,1,3))
-  a <- adaptIntegrateSphereTri( f1, S1, partitionInfo=TRUE, maxEvals=maxEvals, ... )
-  if (a$returnCode != 0) {
-    stop(paste("Error return from adaptIntegrateSphereTri: returnCode= ",a$returnCode," ",
-      a$message, ".  Consider using norm.const.method='simplex.area'.", sep=""))
+  a <- adaptIntegrateSphereTri( f1, n=d, S1, partitionInfo=TRUE, maxEvals=maxEvals, ... )
+  if (a$returnCode > 1) { # used to be if(a$returnCode==0); changed 1/11/2021 to allow ==1 also
+    stop(paste("Error return from adaptIntegrateSphereTri: returnCode=",a$returnCode," ",
+        a$message, ".  Consider using norm.const.method='simplex.area'.", sep=""))
   }
   cfunc$norm.const <- 1.0/a$integral
   cfunc$tessellation.weights <- a$subsimplicesIntegral
@@ -343,15 +342,14 @@ y <- double(m)
 for (i in 1:m) {
   x.mu <- sum( x[,i]*mu )
   if( x.mu > 0 ) {
-    if (x.mu > 1) { x.mu <- 1 }  # roundoff can make x.mu = 1+epsilon, 
-                                # which causes acos(x.mu) to be NA
+    if (x.mu > 1) { x.mu <-1 }  # roundoff can make x.mu = 1+epsilon, 
+                                # which causes acos(x.mu) to be NaN
     theta <- acos(x.mu)
     ht <- 1.0 - theta/theta0
     if (ht > 0) { y[i] <- ht }
   }
 }
 return(y)}
-
 #####################################################################
 gs.pdf2d.plot <- function( gs.dist, xy.grid=seq(-10,10,.1) ){
 # compute and plot the density surface z=dgensphere(x,y) on a grid

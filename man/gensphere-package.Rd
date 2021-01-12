@@ -37,18 +37,24 @@ actually implementing any suggestions will be dependent on time constraints.
 Version 1.0 was released on 18 May 2016.  Version 1.1 was released on 13 September 2017 and includes a 
 new optional argument norm.const.method in the function cfunc.finish.  Also changes were made to 
 accomodate changes in package SphericalCubature.
+
+Version 1.2 (never on CRAN, 10 January 2021) has a minor change to work with the update of package
+SphericalCubature to version 1.5, updated a reference, and the
+examples include \code{if( interactive() )} around calls to plotting functions.
+Version 1.3 (12 January 2021) adds links to the DOI for the paper this work
+is based on, and provides a faster 3-d example.
 }
 
 \references{
-B. C. Arnold, E. Castillo and J. M. Sarabia, Multivariate distributions defined in terms of contours,
-J. Stat. Planning and Inference, 138, 4158 - 4171, 2008
+B. C. Arnold, E. Castillo and J. M. Sarabia (2008), Multivariate distributions defined in terms of contours,
+ J. Stat. Planning and Inference, 138, 4158 - 4171 
 
-C. Fernandez, J. Osiewalksi and M. F. J. Steel, Modeling and Inference with v-Spherical Distributions,
-J. Amer. Stat. Assoc., 90, 1331-1340, 1995
+C. Fernandez, J. Osiewalksi and M. F. J. Steel (1995), Modeling and Inference with v-Spherical Distributions,
+J. Amer. Stat. Assoc., 90, 1331-1340 
     
-J. P. Nolan, Models for generalized spherical and related distributions.
-\href{http://arxiv.org/abs/1510.06772}{arXiv preprint}, Sept. 2015
-
+J. P. Nolan (2016),  An R package for modeling and simulating  generalized spherical and related distributions,
+ J. of Statistical Distributions and Applications, 3:14, online at 
+ \doi{10.1186/s40488-016-0053-0}
 }
 \author{
 John P Nolan
